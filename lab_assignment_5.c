@@ -2,75 +2,103 @@
 #include <stdlib.h>
 
 typedef struct node {
-	char letter;
-	struct node* next;
+  char letter;
+  struct node* next;
 } node;
 
 // Returns number of nodes in the linkedList.
-int length(node* head)
-{
-   struct node *tmp = head;
-    int len = 0;
-   while (tmp != NULL)
-   {
-      tmp = tmp->next;
-      len++;
-   }
+int length(node* head){
+  int count = 0;
+  if(head == NULL)
+    return count;
+  node* temp = head;
 
-   return (len);
+  while(temp != NULL){
+    count++;
+    temp = temp->next;
+  }
+  return count;
 }
 
 // parses the string in the linkedList
 //  if the linked list is head -> |a|->|b|->|c|
 //  then toCString function wil return "abc"
-char* toCString(node* head)
-{
+char* toCString(node* head){
+  int len = length(head);
+  char* str = (char*)malloc(sizeof(char) * (len +1));
+
+  node* temp = head;
+
+  for(int i = 0;i<len;i++){
+    str[i] = temp->letter;
+    temp = temp->next;
+  }
+  str[len] = '\0';
+  return str;
 }
 
 // inserts character to the linkedlist
 // f the linked list is head -> |a|->|b|->|c|
 // then insertChar(&head, 'x') will update the linked list as foolows:
 // head -> |a|->|b|->|c|->|x|
-void insertChar(node** pHead, char c)
-{
+void insertChar(node** pHead, char c){
+  node* newNode = (node*)malloc(sizeof(node));
+  newNode->letter = c;
+  newNode->next = NULL;
+  if(*pHead==NULL){
+    *pHead = newNode;
+  }
+  else{
+	node* temp = *pHead;
+    while(temp->next != NULL){
+		temp = temp->next;
+	}
+  	temp->next = newNode;
+  }
 }
 
 // deletes all nodes in the linkedList.
-void deleteList(node** pHead)
-{
+void deleteList(node** pHead){
+  node* temp = *pHead;
+  while (temp != NULL) {
+    *pHead = temp->next;
+    free(temp);
+    temp = *pHead;
+  }
+  *pHead = NULL;
 }
 
 int main(void)
 {
-	int i, strLen, numInputs;
-	node* head = NULL;
-	char* str;
-	char c;
-	FILE* inFile = fopen("input.txt","r");
+  int i, strLen, numInputs;
+  node* head = NULL;
+  char* str;
+  char c;
+  FILE* inFile = fopen("input.txt","r");
 
-	fscanf(inFile, " %d\n", &numInputs);
-	
-	while (numInputs-- > 0)
-	{
-		fscanf(inFile, " %d\n", &strLen);
-		for (i = 0; i < strLen; i++)
-		{
-			fscanf(inFile," %c", &c);
-			insertChar(&head, c);
-		}
+  fscanf(inFile, " %d\n", &numInputs);
 
-		str = toCString(head);
-		printf("String is : %s\n", str);
+  while (numInputs-- > 0)
+  {
+    fscanf(inFile, " %d\n", &strLen);
+    for (i = 0; i < strLen; i++)
+    {
+      fscanf(inFile," %c", &c);
+      insertChar(&head, c);
+    }
 
-		free(str);
-		deleteList(&head);
+    str = toCString(head);
+    printf("String is : %s\n", str);
 
-		if (head != NULL)
-		{
-			printf("deleteList is not correct!");
-			break;
-		}
-	}
+    free(str);
+    deleteList(&head);
 
-	fclose(inFile);
+    if (head != NULL)
+    {
+      printf("deleteList is not correct!");
+      break;
+    }
+  }
+
+  fclose(inFile);
 }
